@@ -20,14 +20,26 @@ void SysTick_handler(void) {
 } 
 
 /**
- * 'Blink LED' task.
+ * 'Blink LED' task 1.
  */
-static void led_task(void *args __attribute__((unused))) {
+static void led_task1(void *args __attribute__((unused))) {
   while (1) {
     // Toggle the LED.
     GPIOB->ODR ^= GPIO_ODR_ODR12;
-    // Delay for a second.
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    // Delay for a second-ish.
+    vTaskDelay(pdMS_TO_TICKS(1111));
+  };
+}
+
+/**
+ * 'Blink LED' task 2.
+ */
+static void led_task2(void *args __attribute__((unused))) {
+  while (1) {
+    // Toggle the LED.
+    GPIOB->ODR ^= GPIO_ODR_ODR12;
+    // Delay for a second-ish.
+    vTaskDelay(pdMS_TO_TICKS(789));
   };
 }
 
@@ -63,8 +75,9 @@ int main(void) {
     // TODO: On-board LED?
   #endif
 
-  // Create the LED task.
-  xTaskCreate(led_task, "LED_blink", 128, NULL, configMAX_PRIORITIES-1, NULL);
+  // Create the LED tasks.
+  xTaskCreate(led_task1, "LED_blink_1", 128, NULL, configMAX_PRIORITIES-1, NULL);
+  xTaskCreate(led_task2, "LED_blink_2", 128, NULL, configMAX_PRIORITIES-1, NULL);
   // Start the scheduler.
   vTaskStartScheduler();
 
