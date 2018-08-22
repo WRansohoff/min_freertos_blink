@@ -49,6 +49,9 @@ void setup_clocks(void) {
     RCC->CFGR  |=  (RCC_CFGR_SW_PLL);
     // The core clock is now 72MHz.
     core_clock_hz = 72000000;
+  #elif VVC_F3
+    // TODO.
+    core_clock_hz = 8000000;
   #elif VVC_L0
     // Set the Flash ACR to use 1 wait-state
     // and enable the prefetch buffer and pre-read.
