@@ -1,11 +1,13 @@
 # Overview
 
-This is an example FreeRTOS application for boards using the cheap and widely-available STM32F103C8 microcontroller. Depending on your board, the LED might be on pin C13 (or something else) instead of B12.
+This is an example FreeRTOS application for boards using some common STM32 microcontrollers. Depending on your board, the LED will probably be on different pins.
 
-I had some trouble finding FreeRTOS examples that didn't use proprietary development platforms or external libraries. So I decided to cobble together a simple example that only uses the GCC toolchain and some device-specific header files provided by ST.
+I had some trouble finding FreeRTOS examples that didn't use proprietary development platforms or external libraries. So I decided to cobble together a simple example that only uses the GCC toolchain and some device-specific header files provided by the chip's manufacturers.
 
-This barebones example just creates a single task which toggles a GPIO pin every second. It is intended to be a simple introduction to bootstrapping an STM32 FreeRTOS application using free tools, so corrections and suggestions are always appreciated.
+This barebones example just creates a single task which toggles a GPIO pin every second. It is intended to be a simple introduction to bootstrapping an STM32 FreeRTOS application using a free toolchain, so corrections and suggestions are always appreciated.
 
 # Boards
 
-Currently, only the STM32F103C8 is supported; boards with these chips are very cheap, and they have a lot of features. But I would like to add support for chips from other STM32 lines. ST provides affordable 'Nucleo' development boards, so those would probably be a good starting point.
+Currently, the STM32F103C8 and STM32F303K8 are supported. Boards with the STM32F103C8 are very cheap, and they have a lot of features. ST also provides affordable 'Nucleo' development boards with a variety of chips including the STM32F303K8.
+
+I'm also hoping to get this working with the simpler F0 and L0 lines.
