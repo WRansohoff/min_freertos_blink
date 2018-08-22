@@ -4,7 +4,7 @@ This is an example FreeRTOS application for boards using some common STM32 micro
 
 I had some trouble finding FreeRTOS examples that didn't use proprietary development platforms or external libraries. So I decided to cobble together a simple example that only uses the GCC toolchain and some device-specific header files provided by the chip's manufacturers.
 
-This barebones example just creates a single task which toggles a GPIO pin every second. It is intended to be a simple introduction to bootstrapping an STM32 FreeRTOS application using a free toolchain, so corrections and suggestions are always appreciated.
+This barebones example just creates two tasks which toggle a GPIO pin on different timings, to make an on-board LED blink irregularly. I'm hoping it can be a simple introduction to bootstrapping an STM32 FreeRTOS application using a free toolchain, so corrections and suggestions are always appreciated.
 
 # Boards
 
