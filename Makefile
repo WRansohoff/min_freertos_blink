@@ -5,8 +5,8 @@ TARGET = main
 # (TODO: Support some F0/L0 chips)
 #MCU ?= STM32F030K6
 #MCU ?= STM32F031K6
-#MCU ?= STM32F103C8
-MCU ?= STM32F303K8
+MCU ?= STM32F103C8
+#MCU ?= STM32F303K8
 #MCU ?= STM32L031K6
 
 ifeq ($(MCU), STM32F030K6)
@@ -49,6 +49,9 @@ endif
 FREERTOS_PORT_C = $(FREERTOS_PORT_I)/port.c
 
 # Toolchain definitions (ARM bare metal defaults)
+# Note: To compile for Cortex-M0 and -M0+ chips,
+# you'll need a newer version of arm-none-eabi-gcc
+# than the 4.9 which is the default in many repos.
 TOOLCHAIN = /usr/bin
 CC = $(TOOLCHAIN)/arm-none-eabi-gcc
 AS = $(TOOLCHAIN)/arm-none-eabi-as
@@ -78,7 +81,7 @@ CFLAGS += -Os
 CFLAGS += -std=c99
 CFLAGS += -fmessage-length=0 -fno-common
 CFLAGS += -ffunction-sections -fdata-sections
-CFLAGS += --specs=nosys.specs
+#CFLAGS += --specs=nosys.specs
 CFLAGS += -D$(ST_MCU_DEF)
 CFLAGS += -DVVC_$(MCU_CLASS)
 CFLAGS += -DVVC_$(MCU)
@@ -96,13 +99,13 @@ else
 	LFLAGS += -mfloat-abi=soft
 endif
 LFLAGS += -Wall
-LFLAGS += --specs=nosys.specs
+#LFLAGS += --specs=nosys.specs
 LFLAGS += --static -nostartfiles
 LFLAGS += -Wl,-Map=$(TARGET).map
 LFLAGS += -Wl,--gc-sections
 LFLAGS += -lgcc
 LFLAGS += -lc
-LFLAGS += -lnosys
+#LFLAGS += -lnosys
 LFLAGS += -T$(LSCRIPT)
 
 # Source files.
@@ -116,7 +119,7 @@ C_SRC    += ./freertos/Source/list.c
 C_SRC    += ./freertos/Source/tasks.c
 C_SRC    += ./freertos/Source/queue.c
 
-INCLUDE  =  -I./
+INCLUDE  += -I./
 INCLUDE  += -I./src
 INCLUDE  += -I./device_headers
 INCLUDE  += -I./freertos/Source/include
@@ -129,13 +132,13 @@ OBJS += $(AS_SRC:.S=.o)
 all: $(TARGET).bin
 
 %.o: %.S
-	$(AS) $(ASFLAGS) -c $< -o $@
+	PATH=$(PATH):$(EXTRA_PATH) $(AS) $(ASFLAGS) -c $< -o $@
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
+	PATH=$(PATH):$(EXTRA_PATH) $(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
 $(TARGET).elf: $(OBJS)
-	$(CC) $^ $(LFLAGS) -o $@
+	PATH=$(PATH):$(EXTRA_PATH) $(CC) $^ $(LFLAGS) -o $@
 
 $(TARGET).bin: $(TARGET).elf
 	$(OC) -S -O binary $< $@

@@ -23,10 +23,10 @@
 // (Platform-specific shims)
 #ifdef VVC_F1
   #define LED_BANK GPIOB
-  #define LED_ODR  GPIO_ODR_ODR12
+  #define LED_PIN  (12)
 #else
   #define LED_BANK GPIOA
-  #define LED_ODR  GPIO_ODR_10
+  #define LED_PIN  (10)
 #endif
 // (Core system clock speed; initial value depends on the chip.)
 static volatile uint32_t core_clock_hz;

@@ -25,7 +25,7 @@ void SysTick_handler(void) {
 static void led_task1(void *args __attribute__((unused))) {
   while (1) {
     // Toggle the LED.
-    LED_BANK->ODR ^= LED_ODR;
+    LED_BANK->ODR ^= (1 << LED_PIN);
     // Delay for a second-ish.
     vTaskDelay(pdMS_TO_TICKS(1111));
   };
@@ -37,7 +37,7 @@ static void led_task1(void *args __attribute__((unused))) {
 static void led_task2(void *args __attribute__((unused))) {
   while (1) {
     // Toggle the LED.
-    LED_BANK->ODR ^= LED_ODR;
+    LED_BANK->ODR ^= (1 << LED_PIN);
     // Delay for a second-ish.
     vTaskDelay(pdMS_TO_TICKS(789));
   };
@@ -55,32 +55,42 @@ int main(void) {
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     // Enable the GPIOB clock.
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
-    // TODO: On-board LED?
+    // Set the LED pin to push-pull output, 2MHz.
+    LED_BANK->MODER   &= ~(3 << (LED_PIN*2));
+    LED_BANK->MODER   |=  (1 << (LED_PIN*2));
+    LED_BANK->OTYPER  &= ~(1 << LED_PIN);
+    LED_BANK->OSPEEDR &= ~(3 << (LED_PIN*2));
+    LED_BANK->PUPDR   &= ~(1 << LED_PIN);
+    LED_BANK->ODR     |=  (1 << LED_PIN);
   #elif VVC_F1
     // Enable the GPIOB clock.
     RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
     // Enable the on-board LED pin, B12. TODO: make a method.
     // TODO: Make these work with the LED pin macro.
-    LED_BANK->CRH   &= ~(GPIO_CRH_MODE12 |
-                         GPIO_CRH_CNF12);
-    // 2MHz push-pull output.
-    LED_BANK->CRH   |=  (GPIO_CRH_MODE12_1);
+    #if LED_PIN > 7
+      LED_BANK->CRH   &= ~(7 << ((LED_PIN-8)*4));
+      // 2MHz push-pull output.
+      LED_BANK->CRH   |=  (2 << ((LED_PIN-8)*4));
+    #else
+      LED_BANK->CRL   &= ~(7 << (LED_PIN*4));
+      // 2MHz push-pull output.
+      LED_BANK->CRL   |=  (2 << (LED_PIN*3));
+    #endif
     // Turn off to start.
     // (The LED on these boards turns off with 1, on with 0)
-    LED_BANK->ODR   |=  (LED_ODR);
+    LED_BANK->ODR     |=  (1 << LED_PIN);
   #elif VVC_F3
     // Enable the GPIOA clock.
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     // Enable the GPIOB clock.
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
     // Set the LED pin to push-pull output, 2MHz.
-    // TODO: Make these work with the LED pin macro.
-    LED_BANK->MODER   &= ~(GPIO_MODER_MODER10);
-    LED_BANK->MODER   |=  (1 << GPIO_MODER_MODER10_Pos);
-    LED_BANK->OTYPER  &= ~(GPIO_OTYPER_OT_10);
-    LED_BANK->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR10);
-    LED_BANK->PUPDR   &= ~(GPIO_PUPDR_PUPDR10);
-    LED_BANK->ODR     |=  (LED_ODR);
+    LED_BANK->MODER   &= ~(3 << (LED_PIN*2));
+    LED_BANK->MODER   |=  (1 << (LED_PIN*2));
+    LED_BANK->OTYPER  &= ~(1 << LED_PIN);
+    LED_BANK->OSPEEDR &= ~(3 << (LED_PIN*2));
+    LED_BANK->PUPDR   &= ~(1 << LED_PIN);
+    LED_BANK->ODR     |=  (1 << LED_PIN);
   #elif VVC_L0
     // Enable the GPIOA clock.
     RCC->IOPENR   |= RCC_IOPENR_IOPAEN;
