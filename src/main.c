@@ -20,26 +20,16 @@ void SysTick_handler(void) {
 } 
 
 /**
- * 'Blink LED' task 1.
+ * 'Blink LED' task.
  */
-static void led_task1(void *args __attribute__((unused))) {
-  while (1) {
-    // Toggle the LED.
-    LED_BANK->ODR ^= (1 << LED_PIN);
-    // Delay for a second-ish.
-    vTaskDelay(pdMS_TO_TICKS(1111));
-  };
-}
+static void led_task(void *args) {
+  int delay_ms = *(int*)args;
 
-/**
- * 'Blink LED' task 2.
- */
-static void led_task2(void *args __attribute__((unused))) {
   while (1) {
     // Toggle the LED.
     LED_BANK->ODR ^= (1 << LED_PIN);
     // Delay for a second-ish.
-    vTaskDelay(pdMS_TO_TICKS(789));
+    vTaskDelay(pdMS_TO_TICKS(delay_ms));
   };
 }
 
@@ -100,8 +90,8 @@ int main(void) {
   #endif
 
   // Create the LED tasks.
-  xTaskCreate(led_task1, "LED_blink_1", 128, NULL, configMAX_PRIORITIES-1, NULL);
-  xTaskCreate(led_task2, "LED_blink_2", 128, NULL, configMAX_PRIORITIES-1, NULL);
+  xTaskCreate(led_task, "LED_blink_1", 128, (void*)&led_delay_1, configMAX_PRIORITIES-1, NULL);
+  xTaskCreate(led_task, "LED_blink_2", 128, (void*)&led_delay_2, configMAX_PRIORITIES-1, NULL);
   // Start the scheduler.
   vTaskStartScheduler();
 
