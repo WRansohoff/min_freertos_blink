@@ -1,25 +1,6 @@
 #include "main.h"
 
 /**
- * Define some system interrupt handlers to call 'port.c' FreeRTOS methods.
- */
-extern void vPortSVCHandler(void) __attribute__((naked));
-extern void xPortPendSVHandler(void) __attribute__((naked));
-extern void xPortSysTickHandler(void);
-
-void SVC_handler(void) {
-	vPortSVCHandler();
-}
-
-void pending_SV_handler(void) {
-	xPortPendSVHandler();
-}
-
-void SysTick_handler(void) {
-	xPortSysTickHandler();
-} 
-
-/**
  * 'Blink LED' task.
  */
 static void led_task(void *args) {

@@ -129,6 +129,9 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 #define INCLUDE_xTaskGetHandle                  0
 #define INCLUDE_xTaskResumeFromISR              0
 
-/* A header file that defines trace macro can be included here. */
+/* Redirect FreeRTOS port interrupts. */
+#define vPortSVCHandler     SVC_handler
+#define xPortPendSVHandler  pending_SV_handler
+#define xPortSysTickHandler SysTick_handler
 
 #endif /* FREERTOS_CONFIG_H */
