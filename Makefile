@@ -132,13 +132,13 @@ OBJS += $(AS_SRC:.S=.o)
 all: $(TARGET).bin
 
 %.o: %.S
-	PATH=$(PATH):$(EXTRA_PATH) $(AS) $(ASFLAGS) -c $< -o $@
+	$(AS) $(ASFLAGS) -c $< -o $@
 
 %.o: %.c
-	PATH=$(PATH):$(EXTRA_PATH) $(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
+	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
 $(TARGET).elf: $(OBJS)
-	PATH=$(PATH):$(EXTRA_PATH) $(CC) $^ $(LFLAGS) -o $@
+	$(CC) $^ $(LFLAGS) -o $@
 
 $(TARGET).bin: $(TARGET).elf
 	$(OC) -S -O binary $< $@
