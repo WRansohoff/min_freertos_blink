@@ -29,10 +29,10 @@
   #define LED_PIN  (10)
 #endif
 // (Core system clock speed; initial value depends on the chip.)
-static volatile uint32_t core_clock_hz;
+extern volatile uint32_t core_clock_hz;
 
-// LED delay timings; store in a global scope.
-static const int led_delay_1 = 1111;
-static const int led_delay_2 = 789;
+// LED delay timings.
+extern const int led_delay_1;
+extern const int led_delay_2;
 
 #endif

@@ -100,7 +100,7 @@ else
 endif
 LFLAGS += -Wall
 #LFLAGS += --specs=nosys.specs
-LFLAGS += --static -nostartfiles
+LFLAGS += --static
 LFLAGS += -Wl,-Map=$(TARGET).map
 LFLAGS += -Wl,--gc-sections
 LFLAGS += -lgcc
@@ -113,6 +113,7 @@ AS_SRC   =  ./boot_s/$(MCU_FILES)_boot.S
 AS_SRC   += ./vector_tables/$(MCU_FILES)_vt.S
 C_SRC    =  ./src/main.c
 C_SRC    += ./src/util.c
+C_SRC    += ./src/global.c
 C_SRC    += ./freertos/Source/portable/MemMang/heap_4.c
 C_SRC    += $(FREERTOS_PORT_C)
 C_SRC    += ./freertos/Source/list.c
