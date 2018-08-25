@@ -243,5 +243,3 @@ default_interrupt_handler:
     default_interrupt_loop:
       B default_interrupt_loop
 .size default_interrupt_handler, .-default_interrupt_handler
-
-#endif
