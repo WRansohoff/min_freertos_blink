@@ -15,8 +15,13 @@
 #endif
 
 // FreeRTOS includes.
-#include "FreeRTOS.h"
-#include "task.h"
+extern "C" {
+  #include "FreeRTOS.h"
+  #include "task.h"
+}
+
+// Project includes.
+#include "peripherals.h"
 
 // ----------------------
 // Global variables and defines.
@@ -34,5 +39,8 @@ extern volatile uint32_t core_clock_hz;
 // LED delay timings.
 extern const int led_delay_1;
 extern const int led_delay_2;
+
+// LED objects.
+extern pLED board_led;
 
 #endif

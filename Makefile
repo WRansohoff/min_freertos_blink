@@ -2,7 +2,7 @@ TARGET = main
 
 # Default target chip.
 # Currently only the STM32F103C8 is supported.
-# (TODO: Support some F0/L0 chips)
+# (TODO: Support L0 chips)
 #MCU ?= STM32F030K6
 #MCU ?= STM32F031K6
 MCU ?= STM32F103C8
@@ -53,12 +53,13 @@ FREERTOS_PORT_C = $(FREERTOS_PORT_I)/port.c
 # you'll need a newer version of arm-none-eabi-gcc
 # than the 4.9 which is the default in many repos.
 TOOLCHAIN = /usr/bin
-CC = $(TOOLCHAIN)/arm-none-eabi-gcc
-AS = $(TOOLCHAIN)/arm-none-eabi-as
-LD = $(TOOLCHAIN)/arm-none-eabi-ld
-OC = $(TOOLCHAIN)/arm-none-eabi-objcopy
-OD = $(TOOLCHAIN)/arm-none-eabi-objdump
-OS = $(TOOLCHAIN)/arm-none-eabi-size
+CC  = $(TOOLCHAIN)/arm-none-eabi-gcc
+CPP = $(TOOLCHAIN)/arm-none-eabi-g++
+AS  = $(TOOLCHAIN)/arm-none-eabi-as
+LD  = $(TOOLCHAIN)/arm-none-eabi-ld
+OC  = $(TOOLCHAIN)/arm-none-eabi-objcopy
+OD  = $(TOOLCHAIN)/arm-none-eabi-objdump
+OS  = $(TOOLCHAIN)/arm-none-eabi-size
 
 # Assembly directives.
 ASFLAGS += -mcpu=$(MCU_SPEC)
@@ -78,13 +79,34 @@ endif
 CFLAGS += -Wall
 CFLAGS += -g
 CFLAGS += -Os
-CFLAGS += -std=c99
 CFLAGS += -fmessage-length=0 -fno-common
 CFLAGS += -ffunction-sections -fdata-sections
 #CFLAGS += --specs=nosys.specs
 CFLAGS += -D$(ST_MCU_DEF)
 CFLAGS += -DVVC_$(MCU_CLASS)
 CFLAGS += -DVVC_$(MCU)
+CFLAGS += -std=c99
+# C++ compilation directives
+CPPFLAGS += -mcpu=$(MCU_SPEC)
+CPPFLAGS += -mthumb
+ifeq ($(MCU_CLASS), F3)
+	CPPFLAGS += -mhard-float
+	CPPFLAGS += -mfloat-abi=hard
+	CPPFLAGS += -mfpu=fpv4-sp-d16
+else
+	CPPFLAGS += -msoft-float
+	CPPFLAGS += -mfloat-abi=soft
+endif
+CPPFLAGS += -Wall
+CPFLAGS += -g
+CPPFLAGS += -Os
+CPPFLAGS += -fmessage-length=0 -fno-common
+CPPFLAGS += -ffunction-sections -fdata-sections
+CPPFLAGS += -fno-exceptions
+#CPPFLAGS += --specs=nosys.specs
+CPPFLAGS += -D$(ST_MCU_DEF)
+CPPFLAGS += -DVVC_$(MCU_CLASS)
+CPPFLAGS += -DVVC_$(MCU)
 
 # Linker directives.
 LSCRIPT = ./ld/$(LD_SCRIPT)
@@ -109,16 +131,17 @@ LFLAGS += -lc
 LFLAGS += -T$(LSCRIPT)
 
 # Source files.
-AS_SRC   =  ./boot_s/$(MCU_FILES)_boot.S
+AS_SRC    = ./boot_s/$(MCU_FILES)_boot.S
 AS_SRC   += ./vector_tables/$(MCU_FILES)_vt.S
-C_SRC    =  ./src/main.c
-C_SRC    += ./src/util.c
-C_SRC    += ./src/global.c
 C_SRC    += ./freertos/Source/portable/MemMang/heap_4.c
 C_SRC    += $(FREERTOS_PORT_C)
 C_SRC    += ./freertos/Source/list.c
 C_SRC    += ./freertos/Source/tasks.c
 C_SRC    += ./freertos/Source/queue.c
+CPP_SRC   = ./src/main.cpp
+CPP_SRC  += ./src/util.cpp
+CPP_SRC  += ./src/global.cpp
+CPP_SRC  += ./src/peripherals.cpp
 
 INCLUDE  += -I./
 INCLUDE  += -I./src
@@ -127,6 +150,7 @@ INCLUDE  += -I./freertos/Source/include
 INCLUDE  += -I$(FREERTOS_PORT_I)
 
 OBJS  = $(C_SRC:.c=.o)
+OBJS += $(CPP_SRC:.cpp=.o)
 OBJS += $(AS_SRC:.S=.o)
 
 .PHONY: all
@@ -138,8 +162,11 @@ all: $(TARGET).bin
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
+%.o: %.cpp
+	$(CPP) -c $(CPPFLAGS) $(INCLUDE) $< -o $@
+
 $(TARGET).elf: $(OBJS)
-	$(CC) $^ $(LFLAGS) -o $@
+	$(CPP) $^ $(LFLAGS) -o $@
 
 $(TARGET).bin: $(TARGET).elf
 	$(OC) -S -O binary $< $@

@@ -8,7 +8,8 @@ static void led_task(void *args) {
 
   while (1) {
     // Toggle the LED.
-    LED_BANK->ODR ^= (1 << LED_PIN);
+    //LED_BANK->ODR ^= (1 << LED_PIN);
+    board_led.toggle();
     // Delay for a second-ish.
     vTaskDelay(pdMS_TO_TICKS(delay_ms));
   };
@@ -36,20 +37,8 @@ int main(void) {
   #elif VVC_F1
     // Enable the GPIOB clock.
     RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
-    // Enable the on-board LED pin, B12. TODO: make a method.
-    // TODO: Make these work with the LED pin macro.
-    #if LED_PIN > 7
-      LED_BANK->CRH   &= ~(7 << ((LED_PIN-8)*4));
-      // 2MHz push-pull output.
-      LED_BANK->CRH   |=  (2 << ((LED_PIN-8)*4));
-    #else
-      LED_BANK->CRL   &= ~(7 << (LED_PIN*4));
-      // 2MHz push-pull output.
-      LED_BANK->CRL   |=  (2 << (LED_PIN*3));
-    #endif
-    // Turn off to start.
-    // (The LED on these boards turns off with 1, on with 0)
-    LED_BANK->ODR     |=  (1 << LED_PIN);
+    // Enable the on-board LED pin, B12.
+    board_led = pLED(LED_BANK, LED_PIN);
   #elif VVC_F3
     // Enable the GPIOA clock.
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;

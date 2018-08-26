@@ -4,5 +4,6 @@
 // Project includes.
 #include "global.h"
 #include "util.h"
+#include "peripherals.h"
 
 #endif
